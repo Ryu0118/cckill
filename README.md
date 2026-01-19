@@ -4,7 +4,7 @@ A macOS CLI tool to kill Claude Code CLI processes.
 
 ## Installation
 
-### Nest (Recommended)
+The easiest way to install cckill is to use [nest](https://github.com/mtj0928/nest).
 
 ```bash
 nest install Ryu0118/cckill
