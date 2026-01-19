@@ -1,17 +1,17 @@
 import Foundation
 
-/// CCKillで発生するエラー
+/// Errors that can occur in CCKill
 public enum CCKillError: Error, LocalizedError, Sendable {
-    /// psコマンドの実行に失敗
+    /// Failed to execute ps command
     case processListFailed(String)
 
-    /// psコマンドの出力パースに失敗
+    /// Failed to parse ps command output
     case parseError(String)
 
-    /// kill操作に失敗
+    /// Failed to kill process
     case killFailed(pid: pid_t, reason: String)
 
-    /// 権限不足
+    /// Permission denied
     case permissionDenied(pid: pid_t)
 
     public var errorDescription: String? {

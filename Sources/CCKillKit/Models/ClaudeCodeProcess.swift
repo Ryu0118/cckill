@@ -1,17 +1,17 @@
 import Foundation
 
-/// Claude Code CLIプロセスを表すモデル
+/// A model representing a Claude Code CLI process
 public struct ClaudeCodeProcess: Sendable {
-    /// プロセスID
+    /// Process ID
     public let pid: pid_t
 
-    /// コマンドライン引数
+    /// Command line arguments
     public let command: String
 
-    /// CPU使用率 (%)
+    /// CPU usage (%)
     public let cpuUsage: Double
 
-    /// メモリ使用率 (%)
+    /// Memory usage (%)
     public let memoryUsage: Double
 
     public init(pid: pid_t, command: String, cpuUsage: Double, memoryUsage: Double) {

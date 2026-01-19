@@ -1,14 +1,14 @@
 import Foundation
 
-/// プロセスkillの結果
+/// Result of a process kill operation
 public struct KillResult: Sendable {
-    /// 対象プロセスのPID
+    /// PID of the target process
     public let pid: pid_t
 
-    /// 成功したかどうか
+    /// Whether the operation was successful
     public let success: Bool
 
-    /// エラーメッセージ（失敗時）
+    /// Error message (on failure)
     public let errorMessage: String?
 
     public init(pid: pid_t, success: Bool, errorMessage: String? = nil) {
@@ -17,12 +17,12 @@ public struct KillResult: Sendable {
         self.errorMessage = errorMessage
     }
 
-    /// 成功結果を作成
+    /// Creates a success result
     public static func success(pid: pid_t) -> KillResult {
         KillResult(pid: pid, success: true)
     }
 
-    /// 失敗結果を作成
+    /// Creates a failure result
     public static func failure(pid: pid_t, error: String) -> KillResult {
         KillResult(pid: pid, success: false, errorMessage: error)
     }

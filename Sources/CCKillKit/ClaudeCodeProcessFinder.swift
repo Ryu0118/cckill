@@ -1,22 +1,22 @@
 import Foundation
 import Subprocess
 
-/// Claude Code CLIプロセスを検出するクラス
+/// A struct for detecting Claude Code CLI processes
 public struct ClaudeCodeProcessFinder: Sendable {
     public init() {}
 
-    /// Claude Code CLIプロセスを検出
+    /// Detects Claude Code CLI processes
     ///
-    /// 識別条件:
-    /// 1. プロセス名(comm)が `claude` である
-    /// 2. コマンドライン引数に `/Applications/Claude.app` を含まない
-    /// 3. コマンドライン引数が `claude` で始まる
+    /// Detection criteria:
+    /// 1. Process name (comm) is `claude`
+    /// 2. Command line arguments do not contain `/Applications/Claude.app`
+    /// 3. Command line arguments start with `claude`
     public func findProcesses() async throws -> [ClaudeCodeProcess] {
         let output = try await runPsCommand()
         return parseOutput(output)
     }
 
-    /// psコマンドを実行
+    /// Executes the ps command
     private func runPsCommand() async throws -> String {
         let result = try await Subprocess.run(
             .path("/bin/ps"),
@@ -35,12 +35,12 @@ public struct ClaudeCodeProcessFinder: Sendable {
         return output
     }
 
-    /// psコマンドの出力をパース
+    /// Parses the ps command output
     private func parseOutput(_ output: String) -> [ClaudeCodeProcess] {
         var processes: [ClaudeCodeProcess] = []
         let lines = output.components(separatedBy: "\n")
 
-        // ヘッダー行をスキップ
+        // Skip header line
         for line in lines.dropFirst() {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             if trimmed.isEmpty { continue }
@@ -53,11 +53,11 @@ public struct ClaudeCodeProcessFinder: Sendable {
         return processes
     }
 
-    /// 1行をパースしてClaudeCodeProcessを返す（条件に合致しない場合はnil）
+    /// Parses a single line and returns a ClaudeCodeProcess (nil if criteria not met)
     private func parseLine(_ line: String) -> ClaudeCodeProcess? {
-        // ps -eo pid,comm,args,pcpu,pmem の出力形式:
+        // ps -eo pid,comm,args,pcpu,pmem output format:
         // PID COMM ARGS %CPU %MEM
-        // 数値は右寄せ、文字列は左寄せ
+        // Numbers are right-aligned, strings are left-aligned
 
         let components = line.split(separator: " ", omittingEmptySubsequences: true)
         guard components.count >= 5 else { return nil }
@@ -65,24 +65,24 @@ public struct ClaudeCodeProcessFinder: Sendable {
         // PID
         guard let pid = Int32(components[0]) else { return nil }
 
-        // COMM (プロセス名)
+        // COMM (process name)
         let comm = String(components[1])
 
-        // 条件1: プロセス名が claude であること
+        // Criterion 1: Process name must be claude
         guard comm == "claude" else { return nil }
 
-        // 最後の2つは %CPU と %MEM
+        // Last two columns are %CPU and %MEM
         guard let memUsage = Double(components[components.count - 1]),
               let cpuUsage = Double(components[components.count - 2]) else { return nil }
 
-        // ARGS (コマンドライン引数) - COMMの後から%CPUの前まで
+        // ARGS (command line arguments) - from after COMM to before %CPU
         let argsComponents = components[2..<(components.count - 2)]
         let args = argsComponents.joined(separator: " ")
 
-        // 条件2: /Applications/Claude.app を含まないこと
+        // Criterion 2: Must not contain /Applications/Claude.app
         guard !args.contains("/Applications/Claude.app") else { return nil }
 
-        // 条件3: コマンドが claude で始まること
+        // Criterion 3: Command must start with claude
         guard args.hasPrefix("claude") else { return nil }
 
         return ClaudeCodeProcess(

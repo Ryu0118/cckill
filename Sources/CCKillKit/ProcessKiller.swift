@@ -1,16 +1,16 @@
 import Darwin
 import Foundation
 
-/// プロセスをkillするクラス
+/// A struct for killing processes
 public struct ProcessKiller: Sendable {
     public init() {}
 
-    /// 指定したプロセスをkill
+    /// Kills the specified process
     ///
     /// - Parameters:
-    ///   - process: killするプロセス
-    ///   - force: true の場合 SIGKILL、false の場合 SIGTERM を使用
-    /// - Returns: kill結果
+    ///   - process: The process to kill
+    ///   - force: If true, uses SIGKILL; otherwise uses SIGTERM
+    /// - Returns: The result of the kill operation
     public func kill(process: ClaudeCodeProcess, force: Bool = false) -> KillResult {
         let signal: Int32 = force ? SIGKILL : SIGTERM
         let result = Darwin.kill(process.pid, signal)
@@ -26,12 +26,12 @@ public struct ProcessKiller: Sendable {
         }
     }
 
-    /// 複数のプロセスをkill
+    /// Kills multiple processes
     ///
     /// - Parameters:
-    ///   - processes: killするプロセスのリスト
-    ///   - force: true の場合 SIGKILL、false の場合 SIGTERM を使用
-    /// - Returns: 各プロセスのkill結果
+    ///   - processes: List of processes to kill
+    ///   - force: If true, uses SIGKILL; otherwise uses SIGTERM
+    /// - Returns: The result of each kill operation
     public func killAll(processes: [ClaudeCodeProcess], force: Bool = false) -> [KillResult] {
         processes.map { kill(process: $0, force: force) }
     }

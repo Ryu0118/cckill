@@ -2,7 +2,7 @@ import ArgumentParser
 import CCKillKit
 import Foundation
 
-/// Claude Code CLIプロセスをkillするコマンド
+/// Command to kill Claude Code CLI processes
 public struct CCKillCommand: AsyncParsableCommand {
     public static let configuration = CommandConfiguration(
         commandName: "cckill",
@@ -34,26 +34,26 @@ public struct CCKillCommand: AsyncParsableCommand {
             return
         }
 
-        // --list の場合はプロセス一覧を表示
+        // If --list flag is set, display process list
         if list {
             printProcessList(processes)
             return
         }
 
-        // プロセスをkill
+        // Kill processes
         let killer = ProcessKiller()
         let results = killer.killAll(processes: processes, force: force)
 
         printResults(results, force: force)
 
-        // 1つでも失敗があればエラー終了
+        // Exit with error if any kill failed
         let hasFailure = results.contains { !$0.success }
         if hasFailure {
             throw ExitCode.failure
         }
     }
 
-    /// プロセス一覧を表示
+    /// Displays the process list
     private func printProcessList(_ processes: [ClaudeCodeProcess]) {
         print("Claude Code Processes:")
         for process in processes {
@@ -61,7 +61,7 @@ public struct CCKillCommand: AsyncParsableCommand {
         }
     }
 
-    /// kill結果を表示
+    /// Displays the kill results
     private func printResults(_ results: [KillResult], force: Bool) {
         let signalName = force ? "SIGKILL" : "SIGTERM"
         let successCount = results.filter(\.success).count
@@ -73,7 +73,7 @@ public struct CCKillCommand: AsyncParsableCommand {
         }
     }
 
-    /// エラーメッセージを標準エラー出力に出力
+    /// Outputs an error message to standard error
     private func printError(_ message: String) {
         FileHandle.standardError.write(Data((message + "\n").utf8))
     }
