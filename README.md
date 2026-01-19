@@ -4,19 +4,19 @@ A macOS CLI tool to kill Claude Code CLI processes.
 
 ## Installation
 
+### Mint (Recommended)
+
+```bash
+mint install Ryu0118/cckill
+```
+
 ### Swift Package Manager
 
 ```bash
-git clone https://github.com/yourname/cckill.git
+git clone https://github.com/Ryu0118/cckill.git
 cd cckill
 swift build -c release
 cp .build/release/cckill /usr/local/bin/
-```
-
-### Build from Source
-
-```bash
-swift build
 ```
 
 ## Usage
