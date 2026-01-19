@@ -4,10 +4,10 @@ A macOS CLI tool to kill Claude Code CLI processes.
 
 ## Installation
 
-### Mint (Recommended)
+### Nest (Recommended)
 
 ```bash
-mint install Ryu0118/cckill
+nest install Ryu0118/cckill
 ```
 
 ### Swift Package Manager
