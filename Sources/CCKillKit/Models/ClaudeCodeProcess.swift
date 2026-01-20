@@ -11,19 +11,19 @@ public struct ClaudeCodeProcess: Sendable {
     /// CPU usage (%)
     public let cpuUsage: Double
 
-    /// Memory usage (%)
-    public let memoryUsage: Double
+    /// Memory usage in MB (footprint)
+    public let memoryMB: Double
 
-    public init(pid: pid_t, command: String, cpuUsage: Double, memoryUsage: Double) {
+    public init(pid: pid_t, command: String, cpuUsage: Double, memoryMB: Double) {
         self.pid = pid
         self.command = command
         self.cpuUsage = cpuUsage
-        self.memoryUsage = memoryUsage
+        self.memoryMB = memoryMB
     }
 }
 
 extension ClaudeCodeProcess: CustomStringConvertible {
     public var description: String {
-        "PID \(pid): \(command) (CPU: \(String(format: "%.1f", cpuUsage))%, MEM: \(String(format: "%.1f", memoryUsage))%)"
+        "PID \(pid): \(String(format: "%.1f", memoryMB)) MB - \(command)"
     }
 }
