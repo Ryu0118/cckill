@@ -44,7 +44,7 @@ public struct CCKillCommand: AsyncParsableCommand {
         let killer = ProcessKiller()
         let results = killer.killAll(processes: processes, force: force)
 
-        printResults(results, force: force)
+        printResults(results, processes: processes, force: force)
 
         // Exit with error if any kill failed
         let hasFailure = results.contains { !$0.success }
@@ -55,22 +55,35 @@ public struct CCKillCommand: AsyncParsableCommand {
 
     /// Displays the process list
     private func printProcessList(_ processes: [ClaudeCodeProcess]) {
-        print("Claude Code Processes:")
+        print("🔍 Claude Code Processes:")
         for process in processes {
             print("  \(process)")
         }
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        let totalCPU = processes.reduce(0.0) { $0 + $1.cpuUsage }
+        let totalMB = processes.reduce(0.0) { $0 + $1.memoryMB }
+        print("📊 Total: CPU: \(String(format: "%.1f", totalCPU))%, MEM: \(String(format: "%.1f", totalMB)) MB (\(processes.count) processes)")
     }
 
     /// Displays the kill results
-    private func printResults(_ results: [KillResult], force: Bool) {
+    private func printResults(_ results: [KillResult], processes: [ClaudeCodeProcess], force: Bool) {
         let signalName = force ? "SIGKILL" : "SIGTERM"
         let successCount = results.filter(\.success).count
         let totalCount = results.count
 
-        print("Killed \(successCount)/\(totalCount) Claude Code processes (\(signalName)):")
+        print("🔪 Killed \(successCount)/\(totalCount) Claude Code processes (\(signalName)):")
         for result in results {
             print("  \(result)")
         }
+
+        let processByPID = Dictionary(uniqueKeysWithValues: processes.map { ($0.pid, $0) })
+        let freedMB = results
+            .filter(\.success)
+            .compactMap { processByPID[$0.pid]?.memoryMB }
+            .reduce(0.0, +)
+
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        print("💾 Memory freed: \(String(format: "%.1f", freedMB)) MB")
     }
 
     /// Outputs an error message to standard error

@@ -24,6 +24,6 @@ public struct ClaudeCodeProcess: Sendable {
 
 extension ClaudeCodeProcess: CustomStringConvertible {
     public var description: String {
-        "PID \(pid): \(String(format: "%.1f", memoryMB)) MB - \(command)"
+        "PID \(pid): \(command) (CPU: \(String(format: "%.1f", cpuUsage))%, MEM: \(String(format: "%.1f", memoryMB)) MB)"
     }
 }
