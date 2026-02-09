@@ -31,9 +31,9 @@ public struct KillResult: Sendable {
 extension KillResult: CustomStringConvertible {
     public var description: String {
         if success {
-            return "[OK] PID \(pid)"
+            return "✅ PID \(pid)"
         } else {
-            return "[FAILED] PID \(pid): \(errorMessage ?? "Unknown error")"
+            return "❌ PID \(pid): \(errorMessage ?? "Unknown error")"
         }
     }
 }

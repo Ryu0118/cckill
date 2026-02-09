@@ -20,7 +20,7 @@ public struct ClaudeCodeProcessFinder: Sendable {
     private func runPsCommand() async throws -> String {
         let result = try await Subprocess.run(
             .path("/bin/ps"),
-            arguments: ["-eo", "pid,comm,args,pcpu,pmem"],
+            arguments: ["-eo", "pid,comm,args,pcpu,pmem,rss"],
             output: .string(limit: 1024 * 1024)  // 1MB limit
         )
 
@@ -55,12 +55,12 @@ public struct ClaudeCodeProcessFinder: Sendable {
 
     /// Parses a single line and returns a ClaudeCodeProcess (nil if criteria not met)
     private func parseLine(_ line: String) -> ClaudeCodeProcess? {
-        // ps -eo pid,comm,args,pcpu,pmem output format:
-        // PID COMM ARGS %CPU %MEM
+        // ps -eo pid,comm,args,pcpu,pmem,rss output format:
+        // PID COMM ARGS %CPU %MEM RSS
         // Numbers are right-aligned, strings are left-aligned
 
         let components = line.split(separator: " ", omittingEmptySubsequences: true)
-        guard components.count >= 5 else { return nil }
+        guard components.count >= 6 else { return nil }
 
         // PID
         guard let pid = Int32(components[0]) else { return nil }
@@ -71,12 +71,13 @@ public struct ClaudeCodeProcessFinder: Sendable {
         // Criterion 1: Process name must be claude
         guard comm == "claude" else { return nil }
 
-        // Last two columns are %CPU and %MEM
-        guard let memUsage = Double(components[components.count - 1]),
-              let cpuUsage = Double(components[components.count - 2]) else { return nil }
+        // Last three columns are %CPU, %MEM, RSS
+        guard let rss = UInt64(components[components.count - 1]),
+              let memUsage = Double(components[components.count - 2]),
+              let cpuUsage = Double(components[components.count - 3]) else { return nil }
 
         // ARGS (command line arguments) - from after COMM to before %CPU
-        let argsComponents = components[2..<(components.count - 2)]
+        let argsComponents = components[2..<(components.count - 3)]
         let args = argsComponents.joined(separator: " ")
 
         // Criterion 2: Must not contain /Applications/Claude.app
@@ -89,7 +90,8 @@ public struct ClaudeCodeProcessFinder: Sendable {
             pid: pid,
             command: args,
             cpuUsage: cpuUsage,
-            memoryUsage: memUsage
+            memoryUsage: memUsage,
+            memoryRSS: rss
         )
     }
 }
