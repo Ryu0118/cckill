@@ -61,9 +61,8 @@ public struct CCKillCommand: AsyncParsableCommand {
         }
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         let totalCPU = processes.reduce(0.0) { $0 + $1.cpuUsage }
-        let totalMEM = processes.reduce(0.0) { $0 + $1.memoryUsage }
         let totalMB = processes.reduce(0.0) { $0 + $1.memoryMB }
-        print("📊 Total: CPU: \(String(format: "%.1f", totalCPU))%, MEM: \(String(format: "%.1f", totalMEM))% / \(String(format: "%.1f", totalMB)) MB (\(processes.count) processes)")
+        print("📊 Total: CPU: \(String(format: "%.1f", totalCPU))%, MEM: \(String(format: "%.1f", totalMB)) MB (\(processes.count) processes)")
     }
 
     /// Displays the kill results

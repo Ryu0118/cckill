@@ -10,15 +10,6 @@ The easiest way to install cckill is to use [nest](https://github.com/mtj0928/ne
 nest install Ryu0118/cckill
 ```
 
-### Swift Package Manager
-
-```bash
-git clone https://github.com/Ryu0118/cckill.git
-cd cckill
-swift build -c release
-cp .build/release/cckill /usr/local/bin/
-```
-
 ## Usage
 
 ### List Processes
