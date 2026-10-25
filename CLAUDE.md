@@ -28,3 +28,7 @@ swift build
 swift run cckill --list
 swift run cckill --force
 ```
+
+## Documentation and code
+
+When documentation and the existing code disagree, follow the conventions used in the existing code, and in your final reply list every inconsistency you found between the documentation and the code.
